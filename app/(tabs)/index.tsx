@@ -1,8 +1,7 @@
 import { Link, useFocusEffect, useRouter } from "expo-router";
-import React, { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { FlatList, Modal, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
 import { styles } from '../constants/theme';
 import { loadNotes, saveNotes } from '../services/storage';
 
@@ -32,9 +31,9 @@ export default function Notepad() {
 
   const openEditor = (note?: Note): void => {
     if (note) {
-      router.push({ pathname: '/editor', params: { id: note.id, text: note.text } });
+      router.push({ pathname: '/(tabs)/editor', params: { id: note.id, text: note.text } });
     } else {
-      router.push('/editor');
+      router.push('/(tabs)/editor');
     }
   };
 
@@ -110,15 +109,29 @@ export default function Notepad() {
               style={styles.noteTextContainer} 
               onPress={() => openEditor(item)}
             >
-              <Text style={styles.noteText} numberOfLines={2}>
+              <Text style={styles.baseText} 
+              numberOfLines={2}
+              >
                 {item.pinned ? '📌 ' : ''}{item.text}
               </Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => openMenu(item)} style={styles.menuButton}>
+            <TouchableOpacity 
+              onPress={() => openMenu(item)}
+              style={styles.menuButton}
+            >
               <Text style={styles.menuButtonText}>⋮</Text>
             </TouchableOpacity>
           </View>
         )}
+        ListEmptyComponent={
+          <View style={styles.placeholderContainer}>
+            <Text style={styles.placeholderText}>
+              {searchQuery.length > 0 
+                ? 'No notes found' 
+                : 'No notes yet. Create one!'}
+            </Text>
+          </View>
+        }
       />
 
       <Modal
@@ -134,7 +147,7 @@ export default function Notepad() {
                 style={styles.menuItem} 
                 onPress={() => activeNote && togglePinNote(activeNote.id)}
               >
-                <Text style={styles.menuItemText}>
+                <Text style={styles.baseText}>
                   {activeNote?.pinned ? 'Unpin shortcut' : 'Pin shortcut'}
                 </Text>
               </TouchableOpacity>
@@ -143,11 +156,14 @@ export default function Notepad() {
                 style={[styles.menuItem, styles.deleteMenuItem]} 
                 onPress={() => activeNote && deleteNote(activeNote.id)}
               >
-                <Text style={styles.deleteMenuText}>Delete</Text>
+                <Text style={styles.dangerText}>Delete</Text>
               </TouchableOpacity>
               
-              <TouchableOpacity style={styles.menuItem} onPress={closeMenu}>
-                <Text style={styles.cancelMenuText}>Cancel</Text>
+              <TouchableOpacity 
+                style={styles.menuItem}
+                onPress={closeMenu}
+              >
+                <Text style={styles.baseText}>Cancel</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -160,7 +176,10 @@ export default function Notepad() {
         </TouchableOpacity>
       </Link>
 
-      <TouchableOpacity style={styles.fab} onPress={() => openEditor()}>
+      <TouchableOpacity 
+        style={styles.fab}
+        onPress={() => openEditor()}
+      >
         <Text style={styles.fabText}>+</Text>
       </TouchableOpacity>
     </SafeAreaView>

@@ -1,5 +1,5 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { styles } from '../constants/theme';
@@ -39,13 +39,20 @@ export default function Editor() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.editorHeader}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.headerButton}>
-          <Text style={styles.cancelText}>Cancel</Text>
+        <TouchableOpacity 
+          onPress={() => router.back()} 
+          style={styles.headerButton}
+        >
+          <Text style={styles.dangerText}>Cancel</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={handleSave} style={styles.headerButton}>
+        <TouchableOpacity 
+          onPress={handleSave} 
+          style={styles.headerButton}
+        >
           <Text style={styles.saveText}>Save</Text>
         </TouchableOpacity>
       </View>
+      
       <TextInput
         style={styles.fullScreenInput}
         placeholder="Start typing..."

@@ -47,6 +47,20 @@ export const styles = StyleSheet.create({
     color: '#333',
     fontWeight: 'bold',
   },
+  uploadAiText: {
+    fontSize: 16,
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  uploadAiButton: {
+    marginLeft: 10,
+    width: 40,
+    height: 40,
+    backgroundColor: '#007BFF',
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   listContent: {
     padding: 20,
     paddingTop: 0,
@@ -71,7 +85,7 @@ export const styles = StyleSheet.create({
     flex: 1,
     paddingRight: 10,
   },
-  noteText: {
+  baseText: {
     fontSize: 16,
     color: '#333',
   },
@@ -81,7 +95,7 @@ export const styles = StyleSheet.create({
   },
   menuButtonText: {
     fontSize: 22,
-    color: '#666',
+    color: '#333',
     fontWeight: 'bold',
   },
   fab: {
@@ -94,11 +108,6 @@ export const styles = StyleSheet.create({
     borderRadius: 30,
     justifyContent: 'center',
     alignItems: 'center',
-    elevation: 5,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 3,
   },
   fabText: {
     color: '#fff',
@@ -132,18 +141,10 @@ export const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderColor: '#eee',
   },
-  menuItemText: {
+  dangerText: {
     fontSize: 16,
-    color: '#333',
-  },
-  deleteMenuText: {
-    fontSize: 16,
-    color: '#FF3B30',
+    color: 'red',
     fontWeight: 'bold',
-  },
-  cancelMenuText: {
-    fontSize: 16,
-    color: '#666',
   },
   settingsButton: {
     padding: 5,
@@ -173,7 +174,7 @@ export const styles = StyleSheet.create({
     padding: 15,
     backgroundColor: '#fff',
     borderBottomWidth: 1,
-    borderColor: '#ddd',
+    borderColor: '#eee',
   },
   headerButton: {
     padding: 10,
@@ -183,10 +184,6 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
-  cancelText: {
-    color: '#FF3B30',
-    fontSize: 16,
-  },
   fullScreenInput: {
     flex: 1,
     backgroundColor: '#fff',
@@ -194,5 +191,68 @@ export const styles = StyleSheet.create({
     fontSize: 18,
     lineHeight: 26,
     color: '#333',
+  },
+  responseScrollContainer: {
+    paddingHorizontal: 20,
+    paddingBottom: 40,
+  },
+  aiResponseCard: {
+    backgroundColor: '#fff',
+    padding: 20,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#eee',
+  },
+  placeholderContainer: {
+    marginTop: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  placeholderText: {
+    fontSize: 16,
+    color: '#aaa',
+    fontStyle: 'italic',
+  },
+  footerContainer: {
+    paddingVertical: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  footerText: {
+    fontSize: 12,
+    color: '#aaa',
+  },
+  mainContent: {
+    flex: 1,
+  },
+  settingRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 20,
+    borderBottomWidth: 1,
+    borderColor: '#eee',
+  },
+  settingDescription: {
+    fontSize: 16,
+    color: '#333',
+    flex: 1,
+    paddingRight: 10,
+  },
+  deleteButton: {
+    backgroundColor: 'red',
+    paddingVertical: 8,
+    paddingHorizontal: 15,
+    borderRadius: 8,
+  },
+  deleteButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  emailText: {
+    fontSize: 16,
+    color: 'blue',
   }
 });
