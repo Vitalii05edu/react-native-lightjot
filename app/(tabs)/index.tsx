@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { FlatList, Modal, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import { Link, useFocusEffect, useRouter } from "expo-router";
+import React, { useCallback, useState } from 'react';
+import { FlatList, Modal, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { Link } from "expo-router";
-
+import { styles } from '../constants/theme';
 import { loadNotes, saveNotes } from '../services/storage';
 
 interface Note {
@@ -13,74 +13,44 @@ interface Note {
 }
 
 export default function Notepad() {
+  const router = useRouter();
+
   const [notesList, setNotesList] = useState<Note[]>([]);
-  const [isEditorOpen, setIsEditorOpen] = useState<boolean>(false);
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [noteText, setNoteText] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState<string>('');
-  
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const [activeNote, setActiveNote] = useState<Note | null>(null);
 
-  useEffect(() => {
-    const fetchNotes = async () => {
-      const savedNotes = await loadNotes();
-      setNotesList(savedNotes);
-    };
-    fetchNotes();
-  }, []);
-
-  useEffect(() => {
-    saveNotes(notesList);
-  }, [notesList]);
+  useFocusEffect(
+    useCallback(() => {
+      const fetchNotes = async () => {
+        const savedNotes = await loadNotes();
+        setNotesList(savedNotes || []);
+      };
+      fetchNotes();
+    }, [])
+  );
 
   const openEditor = (note?: Note): void => {
     if (note) {
-      setEditingId(note.id);
-      setNoteText(note.text);
+      router.push({ pathname: '/editor', params: { id: note.id, text: note.text } });
     } else {
-      setEditingId(null);
-      setNoteText('');
+      router.push('/editor');
     }
-    setIsEditorOpen(true);
   };
 
-  const closeEditor = (): void => {
-    setIsEditorOpen(false);
-    setEditingId(null);
-    setNoteText('');
-  };
-
-  const handleSave = (): void => {
-    if (noteText.trim() === '') {
-      closeEditor();
-      return;
-    }
-
-    if (editingId) {
-      setNotesList(notesList.map(item => 
-        item.id === editingId ? { ...item, text: noteText } : item
-      ));
-    } else {
-      const newNote: Note = {
-        id: Date.now().toString(),
-        text: noteText,
-        pinned: false,
-      };
-      setNotesList([...notesList, newNote]);
-    }
-    closeEditor();
-  };
-
-  const deleteNote = (id: string): void => {
-    setNotesList(notesList.filter(item => item.id !== id));
+  const deleteNote = async (id: string): Promise<void> => {
+    const updatedNotes = notesList.filter(item => item.id !== id);
+    setNotesList(updatedNotes);
+    await saveNotes(updatedNotes);
     closeMenu();
   };
 
-  const togglePinNote = (id: string): void => {
-    setNotesList(notesList.map(item => 
+  const togglePinNote = async (id: string): Promise<void> => {
+    const updatedNotes = notesList.map(item => 
       item.id === id ? { ...item, pinned: !item.pinned } : item
-    ));
+    );
+    setNotesList(updatedNotes);
+    await saveNotes(updatedNotes);
     closeMenu();
   };
 
@@ -102,34 +72,9 @@ export default function Notepad() {
       return 0;
     });
 
-  if (isEditorOpen) {
-    return (
-      <SafeAreaView style={styles.container}>
-        <View style={styles.editorHeader}>
-          <TouchableOpacity onPress={closeEditor} style={styles.headerButton}>
-            <Text style={styles.cancelText}>Cancel</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={handleSave} style={styles.headerButton}>
-            <Text style={styles.saveText}>Save</Text>
-          </TouchableOpacity>
-        </View>
-        <TextInput
-          style={styles.fullScreenInput}
-          placeholder="Start typing..."
-          value={noteText}
-          onChangeText={setNoteText}
-          multiline={true}
-          autoFocus={true}
-          textAlignVertical="top"
-        />
-      </SafeAreaView>
-    );
-  }
-
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.topBar}>
-        <View style={{ width: 34 }} />
         <Text style={styles.header}>LightJot</Text>
         <Link href="/(tabs)/settings" asChild>
           <TouchableOpacity style={styles.settingsButton}>
@@ -221,200 +166,3 @@ export default function Notepad() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f5f5f5',
-  },
-  topBar: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    marginBottom: 15,
-  },
-  header: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  searchContainer: {
-    flexDirection: 'row',
-    paddingHorizontal: 20,
-    marginBottom: 10,
-    alignItems: 'center',
-  },
-  searchInput: {
-    flex: 1,
-    backgroundColor: '#fff',
-    height: 40,
-    borderRadius: 8,
-    paddingHorizontal: 15,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    fontSize: 16,
-  },
-  clearSearchButton: {
-    marginLeft: 10,
-    width: 40,
-    height: 40,
-    backgroundColor: '#e0e0e0',
-    borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  clearSearchText: {
-    fontSize: 16,
-    color: '#333',
-    fontWeight: 'bold',
-  },
-  listContent: {
-    padding: 20,
-    paddingTop: 0,
-    paddingBottom: 100,
-  },
-  noteItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    padding: 15,
-    borderRadius: 8,
-    marginBottom: 10,
-    borderWidth: 1,
-    borderColor: '#eee',
-  },
-  pinnedNoteItem: {
-    backgroundColor: '#fff9e6',
-    borderColor: '#ffe0b2',
-  },
-  noteTextContainer: {
-    flex: 1,
-    paddingRight: 10,
-  },
-  noteText: {
-    fontSize: 16,
-    color: '#333',
-  },
-  menuButton: {
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-  },
-  menuButtonText: {
-    fontSize: 22,
-    color: '#666',
-    fontWeight: 'bold',
-  },
-  fab: {
-    position: 'absolute',
-    bottom: 30,
-    right: 30,
-    width: 60,
-    height: 60,
-    backgroundColor: '#007BFF',
-    borderRadius: 30,
-    justifyContent: 'center',
-    alignItems: 'center',
-    elevation: 5,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 3,
-  },
-  fabText: {
-    color: '#fff',
-    fontSize: 30,
-    lineHeight: 34,
-  },
-  editorHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 15,
-    backgroundColor: '#fff',
-    borderBottomWidth: 1,
-    borderColor: '#ddd',
-  },
-  headerButton: {
-    padding: 10,
-  },
-  saveText: {
-    color: '#007BFF',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  cancelText: {
-    color: '#FF3B30',
-    fontSize: 16,
-  },
-  fullScreenInput: {
-    flex: 1,
-    backgroundColor: '#fff',
-    padding: 20,
-    fontSize: 18,
-    lineHeight: 26,
-    color: '#333',
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  menuContainer: {
-    backgroundColor: '#fff',
-    width: '80%',
-    borderRadius: 12,
-    padding: 8,
-    elevation: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-  },
-  menuItem: {
-    paddingVertical: 15,
-    paddingHorizontal: 20,
-    alignItems: 'center',
-  },
-  deleteMenuItem: {
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: '#eee',
-  },
-  menuItemText: {
-    fontSize: 16,
-    color: '#333',
-  },
-  deleteMenuText: {
-    fontSize: 16,
-    color: '#FF3B30',
-    fontWeight: 'bold',
-  },
-  cancelMenuText: {
-    fontSize: 16,
-    color: '#666',
-  },
-  settingsButton: {
-    padding: 5,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  settingsIcon: {
-    fontSize: 24,
-    lineHeight: 28,
-  },
-  aiButton: {
-    position: 'absolute',
-    bottom: 30,
-    left: 30,
-    width: 70,
-    height: 70,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  aiIcon: {
-    fontSize: 56
-  }
-});
