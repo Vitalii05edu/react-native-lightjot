@@ -1,9 +1,8 @@
-First iteration of LightJot!
+LightJot Release! V1.0.0
 
-This version includes several features:
-- Creating notes;
-- Editing notes;
-- Pinning notes;
-- Deleting notes;
-- Saving notes after restarting the app;
-- Placeholders for the AI and "Settings" tabs.
+This release is MVP, designed for engineers, managers, creators, and students who need a lightning-fast tool to capture and process text on the go.
+
+Key features:
+1. AI integration;
+2. 100% offline;
+3. Minimalist UI/UX.
